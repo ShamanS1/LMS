@@ -1,0 +1,50 @@
+<div class="max-w-4xl mx-auto py-6 px-4">
+    <h1 class="text-3xl font-bold mb-4">{{ course?.title }}</h1>
+    <p class="text-gray-600 mb-2">Tutor: {{ course?.tutor?.name }}</p>
+    <p class="text-gray-500 mb-6">{{ course?.description }}</p>
+  
+    <button *ngIf="!enrolled"
+        (click)="enroll()"
+        class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 mb-4">
+  Enroll
+</button>
+
+<button *ngIf="enrolled"
+        class="bg-gray-400 text-white px-4 py-2 rounded cursor-not-allowed mb-4"
+        disabled>
+  Enrolled
+</button>
+
+    <!-- Progress Section -->
+<div *ngIf="enrolled" class="mt-4">
+    <h2 class="text-lg font-semibold">Your Progress</h2>
+    <app-progress-bar [courseId]="courseId"></app-progress-bar>
+  </div>
+  
+  
+    <div *ngIf="loading" class="text-gray-400">Loading structure...</div>
+  
+    <div *ngIf="structure.length > 0">
+      <h2 class="text-xl font-semibold mb-2">Course Structure</h2>
+      <div *ngFor="let sec of structure" class="mb-4">
+        <h3 class="text-md font-medium text-blue-600">{{ sec.title }}</h3>
+        <ul class="text-sm text-gray-700 ml-4 list-disc">
+            <li class="flex justify-between items-center py-1">
+                <div class="flex flex-col">
+                  <span>{{ mat.title }} ({{ mat.type }})</span>
+                  <a *ngIf="mat.type === 'file'" 
+                     [href]="'http://localhost:5000/api/materials/' + mat._id + '/download'"
+                     class="text-blue-600 hover:underline text-sm"
+                     download>
+                    Download
+                  </a>
+                </div>
+                <app-progress-toggle [courseId]="courseId" [materialId]="mat._id"></app-progress-toggle>
+              </li>
+              
+              
+        </ul>
+      </div>
+    </div>
+  </div>
+  

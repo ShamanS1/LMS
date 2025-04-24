@@ -1,0 +1,24 @@
+<div class="max-w-7xl mx-auto py-6 px-4">
+    <h1 class="text-2xl font-bold mb-6">My Courses</h1>
+  
+    <div *ngIf="loading" class="text-gray-500">Loading...</div>
+    <div *ngIf="!loading && myCourses.length === 0" class="text-gray-500">You are not enrolled in any courses yet.</div>
+  
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div *ngFor="let course of myCourses" class="bg-white p-4 shadow rounded">
+        <img [src]="course.thumbnail" class="h-40 w-full object-cover rounded mb-4" />
+        <h2 class="text-lg font-semibold">{{ course.title }}</h2>
+        <p class="text-sm text-gray-500">Category: {{ course.category }}</p>
+  
+        <!-- Add Progress Bar -->
+        <app-progress-bar [courseId]="course._id"></app-progress-bar>
+  
+        <!-- Start Learning Button -->
+        <a [routerLink]="['/courses', course._id]"
+           class="block mt-3 bg-green-600 text-white px-4 py-2 rounded text-center hover:bg-green-700">
+          Start Learning
+        </a>
+      </div>
+    </div>
+  </div>
+  

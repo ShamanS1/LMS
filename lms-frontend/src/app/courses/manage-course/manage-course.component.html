@@ -1,0 +1,112 @@
+<div class="max-w-4xl mx-auto py-6 px-4">
+    <h1 class="text-2xl font-bold mb-6">Manage Course: {{ course?.title }}</h1>
+  
+    <!-- Add Section -->
+    <div class="flex gap-4 items-center mb-6">
+      <input [(ngModel)]="newSectionTitle"
+             class="border rounded px-3 py-2 w-full"
+             placeholder="New Section Title" />
+      <button (click)="addSection()"
+              class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+        Add Section
+      </button>
+    </div>
+  
+    <!-- Section List -->
+    <div *ngFor="let section of sections" class="bg-white p-4 shadow rounded mb-6">
+      <div class="flex justify-between items-center mb-2">
+        <h3 class="text-lg font-semibold">{{ section.title }}</h3>
+        <button (click)="deleteSection(section._id)"
+                class="text-red-600 hover:underline text-sm">Delete Section</button>
+      </div>
+
+      <!-- Student Progress Section -->
+<div class="bg-white p-4 rounded shadow mt-8">
+    <h2 class="text-xl font-bold mb-4">Student Progress</h2>
+  
+    <table class="min-w-full table-auto text-sm">
+      <thead>
+        <tr class="border-b">
+          <th class="text-left p-2">Student</th>
+          <th class="text-left p-2">Progress</th>
+          <th class="text-left p-2">Completed Materials</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let entry of studentProgress" class="border-b">
+          <td class="p-2 font-medium">{{ entry.student?.name }}</td>
+          <td class="p-2">{{ entry.progress }}%</td>
+          <td class="p-2">
+            <ul class="list-disc list-inside text-xs">
+              <li *ngFor="let mid of entry.completedMaterials">{{ mid }}</li>
+            </ul>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  
+  
+      <!-- Upload Material -->
+      <div class="border-t pt-4 mt-4">
+        <h4 class="text-md font-semibold mb-2">Add Material</h4>
+  
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-center mb-4">
+          <input [(ngModel)]="newMaterialTitle"
+                 placeholder="Material Title"
+                 class="border px-3 py-2 rounded w-full" />
+  
+          <select [(ngModel)]="newMaterialType"
+                  class="border px-3 py-2 rounded w-full">
+            <option value="pdf">PDF</option>
+            <option value="youtube">YouTube Link</option>
+            <option value="text">Text</option>
+            <option value="file">Other File</option>
+          </select>
+  
+          <input *ngIf="newMaterialType === 'youtube' || newMaterialType === 'text'"
+                 [(ngModel)]="newMaterialUrl"
+                 placeholder="YouTube URL or text content"
+                 class="border px-3 py-2 rounded w-full" />
+  
+          <input *ngIf="newMaterialType === 'pdf' || newMaterialType === 'file'"
+                 type="file" (change)="onFileChange($event)"
+                 class="w-full" />
+        </div>
+  
+        <button (click)="uploadMaterial(section._id)"
+                class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+          Upload Material
+        </button>
+      </div>
+  
+      <!-- Display Materials -->
+      <div class="mt-6">
+        <h4 class="text-md font-semibold mb-2">Materials</h4>
+  
+        <ul class="space-y-2 text-sm">
+          <li *ngFor="let mat of section.materials"
+              class="flex justify-between items-center border px-3 py-2 rounded shadow-sm">
+            <div>
+              <p class="font-medium">{{ mat.title }}</p>
+              <p class="text-gray-500 text-xs capitalize">Type: {{ mat.type }}</p>
+  
+              <a *ngIf="mat.type === 'youtube' || mat.type === 'text'"
+                 [href]="mat.content" target="_blank"
+                 class="text-blue-600 hover:underline text-xs">
+                View Content
+              </a>
+  
+              <a *ngIf="mat.type === 'pdf' || mat.type === 'file'"
+                 [href]="'http://localhost:5000/api/materials/' + mat._id + '/download'"
+                 class="text-blue-600 hover:underline text-xs"
+                 download>
+                Download File
+              </a>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  

@@ -1,0 +1,19 @@
+<nav class="bg-white border-b border-gray-200 px-4 py-3 shadow">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      <div class="text-xl font-bold text-blue-600">
+        <a routerLink="/">MyLMS</a>
+      </div>
+      <div class="flex items-center space-x-4">
+        <a *ngIf="!auth.isAuthenticated()" routerLink="/login" class="text-gray-600 hover:text-blue-600">Login</a>
+        <a *ngIf="!auth.isAuthenticated()" routerLink="/register" class="text-gray-600 hover:text-blue-600">Register</a>
+  
+        <a *ngIf="auth.isAuthenticated()" routerLink="/dashboard" class="text-gray-600 hover:text-blue-600">Dashboard</a>
+        <a *ngIf="auth.isAuthenticated()" (click)="logout()" class="cursor-pointer text-red-600 hover:text-red-800">Logout</a>
+      </div>
+    </div>
+  </nav>
+  
+  <main class="p-4">
+    <router-outlet></router-outlet>
+  </main>
+  

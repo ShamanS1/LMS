@@ -1,0 +1,27 @@
+<div class="max-w-7xl mx-auto py-6 px-4">
+    <h1 class="text-2xl font-bold mb-6">Student Dashboard</h1>
+  
+    <div *ngIf="loading" class="text-gray-500">Loading...</div>
+    <div *ngIf="!loading && dashboard.length === 0" class="text-gray-500">No enrolled courses found.</div>
+  
+    <div *ngFor="let course of dashboard" class="bg-white shadow-md rounded-lg p-4 mb-6">
+      <div class="flex items-center space-x-4">
+        <img [src]="course.thumbnail" class="w-20 h-20 rounded object-cover" alt="Course Thumbnail" />
+        <div>
+          <h2 class="text-xl font-semibold">{{ course.title }}</h2>
+          <p class="text-sm text-gray-500">Tutor: {{ course.tutor }}</p>
+          <p class="text-sm text-green-600 mt-1">Progress: {{ course.progress }}%</p>
+        </div>
+      </div>
+  
+      <div class="mt-4">
+        <h3 class="text-md font-medium mb-2">Latest Materials</h3>
+        <ul class="list-disc list-inside text-sm text-gray-700">
+          <li *ngFor="let mat of course.recentMaterials">
+            {{ mat.title }} ({{ mat.type }})
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  
