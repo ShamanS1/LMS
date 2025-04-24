@@ -21,7 +21,7 @@ const app = express();
 // Middleware
 app.use(cors({
   origin: 'http://localhost:4200', // your frontend URL,
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE','PATCH'],
   credentials: true, // allow session cookies
   exposedHeaders: ['Authorization','Content-Disposition'], // expose headers for token authentication
  //  maxAge: 86400 // 24 hours

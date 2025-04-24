@@ -1,33 +1,46 @@
 <div class="max-w-7xl mx-auto py-6 px-4">
-    <h1 class="text-2xl font-bold mb-6">Tutor Dashboard</h1>
-  
-    <div *ngIf="loading" class="text-gray-500">Loading your courses...</div>
-  
-    <div *ngIf="!loading && courses.length === 0" class="text-gray-500">You have not created any courses yet.</div>
-  
-    <div class="mb-4">
-      <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" routerLink="/create-course">
-        + Create New Course
-      </button>
-    </div>
-  
-    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <div *ngFor="let course of courses" class="bg-white p-4 shadow rounded">
-        <!-- thumbnail -->
-        <img [src]="'http://localhost:5000' + course.thumbnail"
-     alt="Course Thumbnail"
-     class="w-full h-40 object-cover rounded mb-4" />
+  <h1 class="text-2xl font-bold mb-6">Tutor Dashboard</h1>
 
+  <!-- Loading State -->
+  <div *ngIf="loading" class="text-gray-500">Loading your courses...</div>
 
-        <h2 class="text-lg font-semibold">{{ course.title }}</h2>
-        <p class="text-sm text-gray-500 mb-2">Category: {{ course.category }}</p>
-        <p class="text-sm text-gray-500 mb-4">Students Enrolled: {{ course.enrollments?.length || 0 }}</p>
-  
-        <button (click)="goToCourse(course._id)"
-                class="bg-green-600 text-white px-4 py-1 rounded hover:bg-green-700 w-full">
-          Manage Course
-        </button>
-      </div>
+  <!-- No Courses Message -->
+  <div *ngIf="!loading && courses.length === 0" class="text-gray-500">You have not created any courses yet.</div>
+
+  <!-- Create Course Button -->
+  <div class="mb-4">
+    <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" routerLink="/create-course">
+      + Create New Course
+    </button>
+  </div>
+
+  <!-- Course Cards -->
+  <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div *ngFor="let course of courses"
+         class="bg-white p-4 shadow rounded cursor-pointer hover:shadow-md transition"
+         (click)="goToCourse(course._id)">
+      
+      <!-- Thumbnail -->
+      <img [src]="'http://localhost:5000' + course.thumbnail"
+           alt="Course Thumbnail"
+           class="w-full h-40 object-cover rounded mb-4" />
+
+      <!-- Title -->
+      <h2 class="text-lg font-semibold">{{ course.title }}</h2>
+
+      <!-- Category -->
+      <p class="text-sm text-gray-500 mb-1">Category: {{ course.category }}</p>
+
+      <!-- Publish Status -->
+      <p class="text-sm text-gray-500 mb-1">
+        Status:
+        <span [ngClass]="course.isPublished ? 'text-green-600' : 'text-red-600'">
+          {{ course.isPublished ? 'Published' : 'Unpublished' }}
+        </span>
+      </p>
+
+      <!-- Enrollments -->
+      <p class="text-sm text-gray-500">Enrolled: {{ course.enrolledStudents?.length || 0 }}</p>
     </div>
   </div>
-  
+</div>

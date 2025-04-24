@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink, RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { ProgressToggleComponent } from "../../progress/progress-toggle.component";
 import { ProgressBarComponent } from "../../progress/progress-bar/progress-bar.component";
@@ -10,7 +10,7 @@ import { AuthService } from '../../auth/auth.service'; // assume user is stored 
 @Component({
   selector: 'app-course-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, ProgressToggleComponent, ProgressBarComponent],
+  imports: [CommonModule, RouterModule, ProgressToggleComponent, ProgressBarComponent,RouterLink],
   templateUrl: './course-detail.component.html',
   styleUrls: ['./course-detail.component.css']
 })
@@ -21,11 +21,13 @@ export class CourseDetailComponent implements OnInit {
   enrolled = false;
   loading = true;
 mat: any;
+  toastr: any;
 
   constructor(
     private route: ActivatedRoute,
     private http: HttpClient,
-    private auth: AuthService
+    private auth: AuthService,
+    private router: Router,
     ) {}
 
   ngOnInit(): void {
@@ -60,6 +62,8 @@ mat: any;
       next: () => {
         this.enrolled = true;
         this.checkStructure();
+        this.toastr.success('Enrolled successfully');
+        this.router.navigate(['/my-courses']);
       },
       error: err => alert(err.error.message || 'Enrollment failed')
     });

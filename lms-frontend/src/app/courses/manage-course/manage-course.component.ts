@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink, RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -7,57 +7,84 @@ import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-manage-course',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule,RouterLink,RouterModule],
   templateUrl: './manage-course.component.html',
   styleUrls: ['./manage-course.component.css']
 })
 export class ManageCourseComponent implements OnInit {
   courseId = '';
-  course: any = {};
+  course: any;
   sections: any[] = [];
+
+  // Section
   newSectionTitle = '';
-  newMaterialTitle: string = '';
-newMaterialType: string = 'pdf';
-newMaterialUrl: string = '';
-newMaterialFile: File | null = null;
-studentProgress: any[] = [];
 
-loadStudentProgress() {
-  this.http.get<any[]>(`http://localhost:5000/api/progress/course/${this.courseId}`)
-    .subscribe(res => {
-      this.studentProgress = res;
-    });
-}
+  // Material
+  materialInputs: { [sectionId: string]: any } = {};
 
 
-onFileChange(event: any) {
-  this.newMaterialFile = event.target.files[0];
-}
+  constructor(private route: ActivatedRoute, private http: HttpClient, public router: Router) {}
 
-
-  constructor(private route: ActivatedRoute, private http: HttpClient) {}
+  editMaterial(mat: any) {
+    const sectionId = mat.section;
+    this.materialInputs[sectionId] = {
+      title: mat.title,
+      type: mat.type,
+      url: mat.content,
+      file: null,
+      editingId: mat._id
+    };
+  }
+  
 
   ngOnInit(): void {
     this.courseId = this.route.snapshot.params['id'];
     this.loadCourse();
     this.loadSections();
-    this.loadStudentProgress();
-
   }
 
+  // 🧠 Load course info
   loadCourse() {
-    this.http.get(`http://localhost:5000/api/courses/${this.courseId}`).subscribe(res => {
+    this.http.get<any>(`http://localhost:5000/api/courses/${this.courseId}`).subscribe(res => {
       this.course = res;
     });
   }
 
-  loadSections() {
-    this.http.get<any[]>(`http://localhost:5000/api/sections/course/${this.courseId}`).subscribe(res => {
-      this.sections = res;
+  // 🧠 Load sections with populated materials
+ loadSections() {
+  this.http.get<any[]>(`http://localhost:5000/api/sections/course/${this.courseId}`)
+    .subscribe({
+      next: res => {
+        this.sections = res;
+      },
+      error: err => {
+        console.error('Failed to load sections:', err);
+      }
     });
+}
+
+
+  // ✅ Toggle publish/unpublish
+  togglePublish(courseId: string) {
+    this.http.patch(`http://localhost:5000/api/courses/${courseId}/toggle-publish`, {})
+      .subscribe(() => {
+        this.loadCourse(); // Refresh course info
+      });
+  }
+  
+
+  // ✅ Delete course
+  deleteCourse(courseId: string) {
+    if (confirm('Are you sure you want to delete this course?')) {
+      this.http.delete(`http://localhost:5000/api/courses/${courseId}`).subscribe(() => {
+        this.router.navigate(['/tutor-dashboard']);
+      });
+    }
   }
 
+  // ✅ Add section
   addSection() {
+    if (!this.newSectionTitle) return;
     this.http.post(`http://localhost:5000/api/sections`, {
       courseId: this.courseId,
       title: this.newSectionTitle
@@ -67,32 +94,63 @@ onFileChange(event: any) {
     });
   }
 
+  // ✅ Delete section
   deleteSection(sectionId: string) {
-    this.http.delete(`http://localhost:5000/api/sections/${sectionId}`).subscribe(() => {
-      this.loadSections();
-    });
+    if (confirm('Delete this section?')) {
+      this.http.delete(`http://localhost:5000/api/sections/${sectionId}`).subscribe(() => {
+        this.loadSections();
+      });
+    }
   }
 
+  // ✅ Handle file upload
+  onFileChange(event: any, sectionId: string) {
+    this.materialInputs[sectionId].file = event.target.files[0];
+  }
+  
+  // ✅ Upload material
   uploadMaterial(sectionId: string) {
+    const input = this.materialInputs[sectionId];
+    if (!input?.title) return;
+  
     const formData = new FormData();
-    formData.append('title', this.newMaterialTitle);
-    formData.append('type', this.newMaterialType);
+    formData.append('title', input.title);
+    formData.append('type', input.type);
     formData.append('sectionId', sectionId);
     formData.append('courseId', this.courseId);
   
-    if (this.newMaterialType === 'youtube' || this.newMaterialType === 'text') {
-      formData.append('content', this.newMaterialUrl);
-    } else if (this.newMaterialFile) {
-      formData.append('file', this.newMaterialFile);
+    if (input.type === 'youtube' || input.type === 'text') {
+      formData.append('content', input.url);
+    } else if (input.file) {
+      formData.append('file', input.file);
     }
   
-    this.http.post('http://localhost:5000/api/materials', formData).subscribe(() => {
-      this.newMaterialTitle = '';
-      this.newMaterialType = 'pdf';
-      this.newMaterialUrl = '';
-      this.newMaterialFile = null;
-      this.loadSections();
-    });
+    if (input.editingId) {
+      this.http.put(`http://localhost:5000/api/materials/${input.editingId}`, formData).subscribe(() => {
+        this.materialInputs[sectionId] = { title: '', type: 'pdf', url: '', file: null };
+        this.loadSections();
+      });
+    } else {
+      this.http.post('http://localhost:5000/api/materials', formData).subscribe(() => {
+        this.materialInputs[sectionId] = { title: '', type: 'pdf', url: '', file: null };
+        this.loadSections();
+      });
+    }
   }
   
+  
+
+  // ✅ Delete material
+  deleteMaterial(materialId: string) {
+    if (confirm('Delete this material?')) {
+      this.http.delete(`http://localhost:5000/api/materials/${materialId}`).subscribe(() => {
+        this.loadSections();
+      });
+    }
+  }
+
+  // Optional: route to edit course
+  editCourse() {
+    this.router.navigate([`/edit-course/${this.courseId}`]);
+  }
 }

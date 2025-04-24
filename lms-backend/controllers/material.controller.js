@@ -5,12 +5,44 @@ const Section = require('../models/section.model');
 
 
 // Add material
+// exports.addMaterial = async (req, res) => {
+//   try {
+//     const { courseId, sectionId, title, type, content } = req.body;
+
+//     const course = await Course.findById(courseId);
+
+//     if (!course) return res.status(404).json({ message: 'Course not found' });
+
+//     if (
+//       course.tutor.toString() !== req.user._id.toString() &&
+//       req.user.role !== 'admin'
+//     ) {
+//       return res.status(403).json({ message: 'Unauthorized to add material' });
+//     }
+//     //create section
+//     const section = await Section.findById(sectionId);
+// if (!section || section.course.toString() !== courseId)
+//   return res.status(400).json({ message: 'Invalid section' });
+
+//     // create material
+//     const material = await Material.create({
+//         course: courseId,
+//         section: sectionId,
+//         title, type, content, 
+//         createdBy: req.user._id
+//       });
+
+//     res.status(201).json(material);
+//   } catch (err) {
+//     res.status(500).json({ message: 'Failed to add material', error: err.message });
+//   }
+// };
 exports.addMaterial = async (req, res) => {
   try {
-    const { courseId, sectionId, title, type, content } = req.body;
+    const { courseId, sectionId, title, type } = req.body;
+    let content = req.body.content;
 
     const course = await Course.findById(courseId);
-
     if (!course) return res.status(404).json({ message: 'Course not found' });
 
     if (
@@ -19,24 +51,30 @@ exports.addMaterial = async (req, res) => {
     ) {
       return res.status(403).json({ message: 'Unauthorized to add material' });
     }
-    //create section
-    const section = await Section.findById(sectionId);
-if (!section || section.course.toString() !== courseId)
-  return res.status(400).json({ message: 'Invalid section' });
 
-    // create material
+    const section = await Section.findById(sectionId);
+    if (!section || section.course.toString() !== courseId)
+      return res.status(400).json({ message: 'Invalid section' });
+
+    if (type === 'file' && req.file) {
+      content = `/uploads/${req.file.filename}`;
+    }
+
     const material = await Material.create({
-        course: courseId,
-        section: sectionId,
-        title, type, content, 
-        createdBy: req.user._id
-      });
+      course: courseId,
+      section: sectionId,
+      title,
+      type,
+      content,
+      createdBy: req.user._id
+    });
 
     res.status(201).json(material);
   } catch (err) {
     res.status(500).json({ message: 'Failed to add material', error: err.message });
   }
 };
+
 
 // Get all materials for a course
 exports.getMaterialsByCourse = async (req, res) => {
@@ -111,5 +149,39 @@ return res.download(filePath, err => {
     }
     
   };
+
+//update material
+  exports.updateMaterial = async (req, res) => {
+    try {
+      const { title, type, content } = req.body;
+      const material = await Material.findById(req.params.id);
+  
+      if (!material) return res.status(404).json({ message: 'Material not found' });
+  
+      // Only creator or admin can edit
+      if (
+        material.createdBy.toString() !== req.user._id.toString() &&
+        req.user.role !== 'admin'
+      ) {
+        return res.status(403).json({ message: 'Unauthorized' });
+      }
+  
+      // Update fields
+      material.title = title;
+      material.type = type;
+      if (type === 'file' && req.file) {
+        material.content = `/uploads/${req.file.filename}`;
+      } else {
+        material.content = content;
+      }
+  
+      await material.save();
+  
+      res.status(200).json({ message: 'Material updated', material });
+    } catch (err) {
+      res.status(500).json({ message: 'Update failed', error: err.message });
+    }
+  };
+  
 
   

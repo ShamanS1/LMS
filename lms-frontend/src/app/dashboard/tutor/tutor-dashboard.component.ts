@@ -22,6 +22,7 @@ export class TutorDashboardComponent implements OnInit {
         this.courses = res;
         this.loading = false;
       },
+      
       error: err => {
         console.error(err);
         this.loading = false;
@@ -30,6 +31,6 @@ export class TutorDashboardComponent implements OnInit {
   }
 
   goToCourse(courseId: string) {
-    this.router.navigate(['/tutor-dashboard/course', courseId]);
+    this.router.navigate([`/tutor-dashboard/course/${courseId}`]);
   }
 }

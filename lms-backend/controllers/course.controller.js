@@ -2,22 +2,38 @@ const Course = require('../models/course.model');
 const Section  = require('../models/section.model');
 const Material = require('../models/material.model');
 
+
+// controllers/course.controller.js
+exports.getMyCreatedCourses = async (req, res) => {
+  try {
+    const courses = await Course.find({ tutor: req.user._id });
+    res.status(200).json(courses);
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to load tutor courses' });
+  }
+};
+
 exports.getCourseStructure = async (req, res) => {
-    const { id } = req.params;
-    const sections = await Section.find({ course: id })
-      .sort('order')
-      .lean();
-    const materials = await Material.find({ course: id })
-      .lean();
-  
-    // group materials by section
+  try {
+    const courseId = req.params.id;
+
+    // Fetch sections of the course
+    const sections = await Section.find({ course: courseId }).sort('order').lean();
+
+    // Fetch all materials for the course
+    const materials = await Material.find({ course: courseId }).lean();
+
+    // Group materials into their respective sections
     const grouped = sections.map(sec => ({
       ...sec,
       materials: materials.filter(m => m.section.toString() === sec._id.toString())
     }));
-  
+
     res.json(grouped);
-  };
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to load course structure', error: err.message });
+  }
+};
 
 // Create course
 exports.createCourse = async (req, res) => {
@@ -28,13 +44,15 @@ exports.createCourse = async (req, res) => {
 
     const { title, description, category } = req.body;
     const thumbnail = req.file ? `/uploads/${req.file.filename}` : null;
+    const isPublished = req.body.isPublished === 'true'; // ✅ Define BEFORE use
 
     const newCourse = await Course.create({
       title,
       description,
       category,
       thumbnail,
-      tutor: req.user._id
+      tutor: req.user._id, // ✅ Associate course with tutor
+      isPublished
     });
 
     res.status(201).json(newCourse);
@@ -43,6 +61,7 @@ exports.createCourse = async (req, res) => {
     res.status(500).json({ message: 'Error creating course', error: err.message });
   }
 };
+
 
 
 

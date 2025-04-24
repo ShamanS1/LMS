@@ -1,112 +1,117 @@
+<div class="mb-4">
+  <button (click)="router.navigate(['/tutor-dashboard'])"
+          class="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700">
+    ← Back to Dashboard
+  </button>
+</div>
+
 <div class="max-w-4xl mx-auto py-6 px-4">
-    <h1 class="text-2xl font-bold mb-6">Manage Course: {{ course?.title }}</h1>
-  
-    <!-- Add Section -->
-    <div class="flex gap-4 items-center mb-6">
+  <h1 class="text-2xl font-bold mb-6">Manage Course: {{ course?.title }}</h1>
+
+  <!-- Course Controls -->
+  <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+    <button class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600"
+            (click)="togglePublish(course._id)">
+      {{ course?.isPublished ? 'Unpublish' : 'Publish' }}
+    </button>
+
+    <div class="flex gap-2">
+      <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+              (click)="editCourse()">
+        Edit Course
+      </button>
+      <button class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+              (click)="deleteCourse(course._id)">
+        Delete Course
+      </button>
+    </div>
+  </div>
+
+  <!-- Add Section -->
+  <div class="mb-6">
+    <h2 class="text-xl font-semibold mb-2">Add Section</h2>
+    <div class="flex gap-4 items-center">
       <input [(ngModel)]="newSectionTitle"
-             class="border rounded px-3 py-2 w-full"
-             placeholder="New Section Title" />
+             placeholder="New Section Title"
+             class="border rounded px-3 py-2 w-full" />
       <button (click)="addSection()"
-              class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+              class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
         Add Section
       </button>
     </div>
-  
-    <!-- Section List -->
-    <div *ngFor="let section of sections" class="bg-white p-4 shadow rounded mb-6">
-      <div class="flex justify-between items-center mb-2">
-        <h3 class="text-lg font-semibold">{{ section.title }}</h3>
-        <button (click)="deleteSection(section._id)"
-                class="text-red-600 hover:underline text-sm">Delete Section</button>
-      </div>
+  </div>
 
-      <!-- Student Progress Section -->
-<div class="bg-white p-4 rounded shadow mt-8">
-    <h2 class="text-xl font-bold mb-4">Student Progress</h2>
-  
-    <table class="min-w-full table-auto text-sm">
-      <thead>
-        <tr class="border-b">
-          <th class="text-left p-2">Student</th>
-          <th class="text-left p-2">Progress</th>
-          <th class="text-left p-2">Completed Materials</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let entry of studentProgress" class="border-b">
-          <td class="p-2 font-medium">{{ entry.student?.name }}</td>
-          <td class="p-2">{{ entry.progress }}%</td>
-          <td class="p-2">
-            <ul class="list-disc list-inside text-xs">
-              <li *ngFor="let mid of entry.completedMaterials">{{ mid }}</li>
-            </ul>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-  
-  
-      <!-- Upload Material -->
-      <div class="border-t pt-4 mt-4">
-        <h4 class="text-md font-semibold mb-2">Add Material</h4>
-  
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-center mb-4">
-          <input [(ngModel)]="newMaterialTitle"
-                 placeholder="Material Title"
-                 class="border px-3 py-2 rounded w-full" />
-  
-          <select [(ngModel)]="newMaterialType"
-                  class="border px-3 py-2 rounded w-full">
-            <option value="pdf">PDF</option>
-            <option value="youtube">YouTube Link</option>
-            <option value="text">Text</option>
-            <option value="file">Other File</option>
-          </select>
-  
-          <input *ngIf="newMaterialType === 'youtube' || newMaterialType === 'text'"
-                 [(ngModel)]="newMaterialUrl"
-                 placeholder="YouTube URL or text content"
-                 class="border px-3 py-2 rounded w-full" />
-  
-          <input *ngIf="newMaterialType === 'pdf' || newMaterialType === 'file'"
-                 type="file" (change)="onFileChange($event)"
-                 class="w-full" />
-        </div>
-  
-        <button (click)="uploadMaterial(section._id)"
-                class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
-          Upload Material
-        </button>
-      </div>
-  
-      <!-- Display Materials -->
-      <div class="mt-6">
-        <h4 class="text-md font-semibold mb-2">Materials</h4>
-  
-        <ul class="space-y-2 text-sm">
-          <li *ngFor="let mat of section.materials"
-              class="flex justify-between items-center border px-3 py-2 rounded shadow-sm">
-            <div>
-              <p class="font-medium">{{ mat.title }}</p>
-              <p class="text-gray-500 text-xs capitalize">Type: {{ mat.type }}</p>
-  
-              <a *ngIf="mat.type === 'youtube' || mat.type === 'text'"
-                 [href]="mat.content" target="_blank"
-                 class="text-blue-600 hover:underline text-xs">
-                View Content
-              </a>
-  
-              <a *ngIf="mat.type === 'pdf' || mat.type === 'file'"
-                 [href]="'http://localhost:5000/api/materials/' + mat._id + '/download'"
-                 class="text-blue-600 hover:underline text-xs"
-                 download>
-                Download File
-              </a>
-            </div>
-          </li>
-        </ul>
-      </div>
+  <!-- Sections and Materials -->
+  <div *ngFor="let section of sections" class="bg-white p-4 shadow rounded mb-6">
+    <div class="flex justify-between items-center mb-2">
+      <h3 class="text-lg font-semibold">{{ section.title }}</h3>
+      <button (click)="deleteSection(section._id)" class="text-red-600 text-sm hover:underline">Delete</button>
+      <ul class="space-y-2 text-sm mt-4">
+        <li *ngFor="let mat of section.materials" class="flex justify-between items-center border px-3 py-2 rounded shadow-sm">
+          <div>
+            <p class="font-medium">{{ mat.title }}</p>
+            <p class="text-gray-500 text-xs capitalize">Type: {{ mat.type }}</p>
+      
+            <ng-container [ngSwitch]="mat.type">
+              <a *ngSwitchCase="'youtube'" [href]="mat.content" target="_blank"
+                 class="text-blue-600 hover:underline text-xs">View YouTube</a>
+              <p *ngSwitchCase="'text'" class="text-xs text-gray-700 mt-1">{{ mat.content }}</p>
+              <a *ngSwitchCase="'pdf'" [href]="'http://localhost:5000' + mat.content" download
+                 class="text-blue-600 hover:underline text-xs">Download PDF</a>
+              <a *ngSwitchCase="'file'" [href]="'http://localhost:5000' + mat.content" download
+                 class="text-blue-600 hover:underline text-xs">Download File</a>
+            </ng-container>
+          </div>
+      
+          <div class="flex gap-2">
+            <button class="text-yellow-600 hover:underline text-xs" (click)="editMaterial(mat)">Edit</button>
+            <button class="text-red-600 hover:underline text-xs" (click)="deleteMaterial(mat._id)">Delete</button>
+          </div>
+        </li>
+      </ul>
+      
     </div>
+
+    <!-- Upload Material -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-center mb-4"
+*ngIf="materialInputs[section._id] = materialInputs[section._id] || { title: '', type: 'pdf', url: '', file: null }">
+<input [(ngModel)]="materialInputs[section._id].title" placeholder="Material Title" class="border px-3 py-2 rounded w-full" />
+<select [(ngModel)]="materialInputs[section._id].type" class="border px-3 py-2 rounded w-full">
+<option value="pdf">PDF</option>
+<option value="youtube">YouTube Link</option>
+<option value="text">Text</option>
+<option value="file">Other File</option>
+</select>
+<input *ngIf="materialInputs[section._id].type === 'youtube' || materialInputs[section._id].type === 'text'"
+    [(ngModel)]="materialInputs[section._id].url" placeholder="YouTube URL or Text Content" class="border px-3 py-2 rounded w-full" />
+<input *ngIf="materialInputs[section._id].type === 'pdf' || materialInputs[section._id].type === 'file'"
+    type="file" (change)="onFileChange($event, section._id)" class="w-full" />
+</div>
+
+<button (click)="uploadMaterial(section._id)"
+   class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 mb-4">
+Upload Material
+</button>
+
+
+    <!-- List Materials -->
+    <ul class="space-y-2 text-sm">
+      <li *ngFor="let mat of section.materials" class="flex justify-between items-center border px-3 py-2 rounded shadow-sm">
+        <div>
+          <p class="font-medium">{{ mat.title }}</p>
+          <p class="text-gray-500 text-xs capitalize">Type: {{ mat.type }}</p>
+
+          <a *ngIf="mat.type === 'youtube' || mat.type === 'text'" [href]="mat.content" target="_blank"
+             class="text-blue-600 hover:underline text-xs">View</a>
+
+          <a *ngIf="mat.type === 'pdf' || mat.type === 'file'"
+             [href]="'http://localhost:5000/api/materials/' + mat._id + '/download'"
+             download class="text-blue-600 hover:underline text-xs">Download</a>
+        </div>
+
+        <button (click)="deleteMaterial(mat._id)"
+                class="text-red-600 hover:underline text-sm">Delete</button>
+      </li>
+    </ul>
   </div>
-  
+</div>

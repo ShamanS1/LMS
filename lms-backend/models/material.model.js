@@ -14,7 +14,7 @@ const materialSchema = new mongoose.Schema({
   title: { type: String, required: true },
   type: {
     type: String,
-    enum: ['video', 'note', 'link', 'file'],
+    enum: ['video', 'note', 'link', 'file','text'],
     required: true
   },
   content: { type: String, required: true }, // YouTube URL, text note, file URL

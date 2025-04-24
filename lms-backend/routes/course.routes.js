@@ -11,7 +11,8 @@ const {
   getMyCourses,
   getEnrolledStudents,
   unenrollFromCourse,
-  togglePublishStatus
+  togglePublishStatus,
+  getMyCreatedCourses
 } = require('../controllers/course.controller');
 
 const protect = require('../middlewares/auth');
@@ -49,5 +50,7 @@ router.get('/my-courses', protect, permit('student'), getMyCourses);
 router.get('/:courseId/students', protect, permit('tutor', 'admin'), getEnrolledStudents);
 router.delete('/:courseId/unenroll', protect, permit('student'), unenrollFromCourse);
 router.patch('/:id/toggle-publish', protect, permit('tutor', 'admin'), togglePublishStatus);
+router.get('/my-created', protect, permit('tutor', 'admin'), getMyCreatedCourses);
+
 
 module.exports = router;
