@@ -2,14 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { TutorNavComponent } from '../../../shared/tutor-nav/tutor-nav.component';
 
 @Component({
   selector: 'app-tutor-progress',
   standalone: true,
   templateUrl: './tutor-progress.component.html',
   styleUrls: ['./tutor-progress.component.css'],
-  imports: [CommonModule, ReactiveFormsModule, FormsModule,TutorNavComponent]
+  imports: [CommonModule, ReactiveFormsModule, FormsModule]
 })
 export class TutorProgressComponent implements OnInit {
   courses: any[] = [];

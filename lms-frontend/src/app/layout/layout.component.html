@@ -13,15 +13,50 @@
 
         <div class="hidden md:block">
           <div class="ml-10 flex items-center space-x-4">
-            <a routerLink="/courses" routerLinkActive="text-indigo-600" class="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-indigo-600 hover:bg-gray-50 transition-all duration-200">Published Courses</a>
-            <a routerLink="/student-dashboard" routerLinkActive="text-indigo-600" class="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-indigo-600 hover:bg-gray-50 transition-all duration-200">Dashboard</a>
-            <a  class="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-indigo-600 hover:bg-gray-50 transition-all duration-200  cursor-not-allowed">Resources</a>
-            <a   class="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-indigo-600 hover:bg-gray-50 transition-all duration-200  cursor-not-allowed">Community</a>
-            <a *ngIf="userRole === 'student'" routerLink="/my-courses" routerLinkActive="text-indigo-600" class="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-indigo-600 hover:bg-gray-50 transition-all duration-200">My Courses</a>
-            <a *ngIf="userRole === 'student'" routerLink="/student-progress" routerLinkActive="text-indigo-600" class="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-indigo-600 hover:bg-gray-50 transition-all duration-200">Progress</a>
-            <a *ngIf="userRole === 'tutor'" routerLink="/tutor-progress" routerLinkActive="text-indigo-600" class="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-indigo-600 hover:bg-gray-50 transition-all duration-200">Progress</a>
+            
+            <!-- Student-specific links -->
+            <ng-container *ngIf="userRole === 'student'">
+              <a routerLink="/courses" routerLinkActive="text-indigo-600"
+                 class="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-indigo-600 hover:bg-gray-50 transition-all duration-200">
+                 Published Courses
+              </a>
+              <a routerLink="/student-dashboard" routerLinkActive="text-indigo-600"
+                 class="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-indigo-600 hover:bg-gray-50 transition-all duration-200">
+                 Dashboard
+              </a>
+              <a routerLink="/my-courses" routerLinkActive="text-indigo-600"
+                 class="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-indigo-600 hover:bg-gray-50 transition-all duration-200">
+                 My Courses
+              </a>
+              <a routerLink="/student-progress" routerLinkActive="text-indigo-600"
+                 class="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-indigo-600 hover:bg-gray-50 transition-all duration-200">
+                 Progress
+              </a>
+            </ng-container>
+        
+            <!-- Tutor-specific links -->
+            <ng-container *ngIf="userRole === 'tutor'">
+              <a routerLink="/tutor-dashboard" routerLinkActive="text-indigo-600"
+                 class="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-indigo-600 hover:bg-gray-50 transition-all duration-200">
+                 Dashboard
+              </a>
+              <a routerLink="/tutor-progress" routerLinkActive="text-indigo-600"
+                 class="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-indigo-600 hover:bg-gray-50 transition-all duration-200">
+                 Progress
+              </a>
+            </ng-container>
+        
+            <!-- Common links for all roles -->
+            <a class="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-indigo-600 hover:bg-gray-50 transition-all duration-200 cursor-not-allowed">
+              Resources
+            </a>
+            <a class="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-indigo-600 hover:bg-gray-50 transition-all duration-200 cursor-not-allowed">
+              Community
+            </a>
+        
           </div>
         </div>
+        
 
         <div class="flex items-center space-x-3">
           <button class="p-1.5 rounded-full text-gray-500 hover:text-indigo-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all duration-200">

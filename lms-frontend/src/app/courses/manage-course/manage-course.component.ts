@@ -3,12 +3,11 @@ import { ActivatedRoute, Router, RouterLink, RouterModule } from '@angular/route
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TutorNavComponent } from '../../shared/tutor-nav/tutor-nav.component';
 
 @Component({
   selector: 'app-manage-course',
   standalone: true,
-  imports: [CommonModule, FormsModule,RouterModule,TutorNavComponent],
+  imports: [CommonModule, FormsModule,RouterModule],
   templateUrl: './manage-course.component.html',
   styleUrls: ['./manage-course.component.css']
 })

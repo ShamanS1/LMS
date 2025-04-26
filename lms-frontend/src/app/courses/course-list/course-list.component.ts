@@ -2,12 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { RouterLink, RouterModule } from '@angular/router';
-import { StudentNavComponent } from '../../dashboard/student/student-nav/student-nav.component';
 
 @Component({
   selector: 'app-course-list',
   standalone: true,
-  imports: [CommonModule, RouterModule,RouterLink,StudentNavComponent],
+  imports: [CommonModule, RouterModule,RouterLink],
   templateUrl: './course-list.component.html',
   styleUrls: ['./course-list.component.css']
 })

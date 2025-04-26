@@ -2,16 +2,19 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { RouterModule, Router } from '@angular/router';
-import { TutorNavComponent } from '../../shared/tutor-nav/tutor-nav.component';
 
 @Component({
   selector: 'app-tutor-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule,TutorNavComponent],
+  imports: [CommonModule, RouterModule],
   templateUrl: './tutor-dashboard.component.html',
   styleUrls: ['./tutor-dashboard.component.css']
 })
 export class TutorDashboardComponent implements OnInit {
+  getTotalEnrollments(course: any): number {
+    return course?.enrolledStudents?.length || 0;
+  }
+  
   courses: any[] = [];
   loading = true;
 
@@ -34,4 +37,9 @@ export class TutorDashboardComponent implements OnInit {
   goToCourse(courseId: string) {
     this.router.navigate([`/tutor-dashboard/course/${courseId}`]);
   }
+
+  get publishedCoursesCount(): number {
+    return this.courses?.filter(c => c.isPublished)?.length || 0;
+  }
+  
 }

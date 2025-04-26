@@ -3,12 +3,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
-import { TutorNavComponent } from '../../shared/tutor-nav/tutor-nav.component';
 
 @Component({
   selector: 'app-edit-course',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule,TutorNavComponent],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './edit-course.component.html'
 })
 export class EditCourseComponent implements OnInit {

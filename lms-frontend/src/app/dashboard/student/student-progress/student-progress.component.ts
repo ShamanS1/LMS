@@ -4,12 +4,11 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProgressToggleComponent } from '../../../progress/progress-toggle.component';
 import { AuthService } from '../../../auth/auth.service';
-import { StudentNavComponent } from '../student-nav/student-nav.component';
 
 @Component({
   selector: 'app-student-progress',
   standalone: true,
-  imports: [CommonModule, FormsModule, ProgressToggleComponent,StudentNavComponent],
+  imports: [CommonModule, FormsModule, ProgressToggleComponent],
   templateUrl: './student-progress.component.html',
   styleUrls: ['./student-progress.component.css']
 })

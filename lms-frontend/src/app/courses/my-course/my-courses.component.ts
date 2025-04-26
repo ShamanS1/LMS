@@ -3,12 +3,11 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 import { ProgressBarComponent } from "../../progress/progress-bar/progress-bar.component";
-import { StudentNavComponent } from '../../dashboard/student/student-nav/student-nav.component';
 
 @Component({
   selector: 'app-my-courses',
   standalone: true,
-  imports: [CommonModule, RouterModule, ProgressBarComponent,StudentNavComponent],
+  imports: [CommonModule, RouterModule, ProgressBarComponent],
   templateUrl: './my-courses.component.html',
   styleUrls: ['./my-courses.component.css']
 })
