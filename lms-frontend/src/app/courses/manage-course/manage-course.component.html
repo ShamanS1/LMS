@@ -1,3 +1,5 @@
+<app-tutor-nav></app-tutor-nav>
+
 <div class="mb-4">
   <button (click)="router.navigate(['/tutor-dashboard'])"
           class="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700">
@@ -46,53 +48,28 @@
     <div class="flex justify-between items-center mb-2">
       <h3 class="text-lg font-semibold">{{ section.title }}</h3>
       <button (click)="deleteSection(section._id)" class="text-red-600 text-sm hover:underline">Delete</button>
-      <ul class="space-y-2 text-sm mt-4">
-        <li *ngFor="let mat of section.materials" class="flex justify-between items-center border px-3 py-2 rounded shadow-sm">
-          <div>
-            <p class="font-medium">{{ mat.title }}</p>
-            <p class="text-gray-500 text-xs capitalize">Type: {{ mat.type }}</p>
-      
-            <ng-container [ngSwitch]="mat.type">
-              <a *ngSwitchCase="'youtube'" [href]="mat.content" target="_blank"
-                 class="text-blue-600 hover:underline text-xs">View YouTube</a>
-              <p *ngSwitchCase="'text'" class="text-xs text-gray-700 mt-1">{{ mat.content }}</p>
-              <a *ngSwitchCase="'pdf'" [href]="'http://localhost:5000' + mat.content" download
-                 class="text-blue-600 hover:underline text-xs">Download PDF</a>
-              <a *ngSwitchCase="'file'" [href]="'http://localhost:5000' + mat.content" download
-                 class="text-blue-600 hover:underline text-xs">Download File</a>
-            </ng-container>
-          </div>
-      
-          <div class="flex gap-2">
-            <button class="text-yellow-600 hover:underline text-xs" (click)="editMaterial(mat)">Edit</button>
-            <button class="text-red-600 hover:underline text-xs" (click)="deleteMaterial(mat._id)">Delete</button>
-          </div>
-        </li>
-      </ul>
-      
     </div>
 
     <!-- Upload Material -->
-<div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-center mb-4"
-*ngIf="materialInputs[section._id] = materialInputs[section._id] || { title: '', type: 'pdf', url: '', file: null }">
-<input [(ngModel)]="materialInputs[section._id].title" placeholder="Material Title" class="border px-3 py-2 rounded w-full" />
-<select [(ngModel)]="materialInputs[section._id].type" class="border px-3 py-2 rounded w-full">
-<option value="pdf">PDF</option>
-<option value="youtube">YouTube Link</option>
-<option value="text">Text</option>
-<option value="file">Other File</option>
-</select>
-<input *ngIf="materialInputs[section._id].type === 'youtube' || materialInputs[section._id].type === 'text'"
-    [(ngModel)]="materialInputs[section._id].url" placeholder="YouTube URL or Text Content" class="border px-3 py-2 rounded w-full" />
-<input *ngIf="materialInputs[section._id].type === 'pdf' || materialInputs[section._id].type === 'file'"
-    type="file" (change)="onFileChange($event, section._id)" class="w-full" />
-</div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-center mb-4"
+         *ngIf="materialInputs[section._id] = materialInputs[section._id] || { title: '', type: 'pdf', url: '', file: null }">
+      <input [(ngModel)]="materialInputs[section._id].title" placeholder="Material Title" class="border px-3 py-2 rounded w-full" />
+      <select [(ngModel)]="materialInputs[section._id].type" class="border px-3 py-2 rounded w-full">
+        <option value="pdf">PDF</option>
+        <option value="youtube">YouTube Link</option>
+        <option value="text">Text</option>
+        <option value="file">Other File</option>
+      </select>
+      <input *ngIf="materialInputs[section._id].type === 'youtube' || materialInputs[section._id].type === 'text'"
+             [(ngModel)]="materialInputs[section._id].url" placeholder="YouTube URL or Text Content" class="border px-3 py-2 rounded w-full" />
+      <input *ngIf="materialInputs[section._id].type === 'pdf' || materialInputs[section._id].type === 'file'"
+             type="file" (change)="onFileChange($event, section._id)" class="w-full" />
+    </div>
 
-<button (click)="uploadMaterial(section._id)"
-   class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 mb-4">
-Upload Material
-</button>
-
+    <button (click)="uploadMaterial(section._id)"
+            class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 mb-4">
+      Upload Material
+    </button>
 
     <!-- List Materials -->
     <ul class="space-y-2 text-sm">
@@ -101,16 +78,28 @@ Upload Material
           <p class="font-medium">{{ mat.title }}</p>
           <p class="text-gray-500 text-xs capitalize">Type: {{ mat.type }}</p>
 
-          <a *ngIf="mat.type === 'youtube' || mat.type === 'text'" [href]="mat.content" target="_blank"
-             class="text-blue-600 hover:underline text-xs">View</a>
+          <ng-container [ngSwitch]="mat.type">
+            <a *ngSwitchCase="'youtube'" [href]="mat.content" target="_blank"
+               class="text-blue-600 hover:underline text-xs">View YouTube</a>
+            <p *ngSwitchCase="'text'" class="text-xs text-gray-700 mt-1">{{ mat.content }}</p>
+            <!-- <a *ngSwitchCase="'pdf'" [href]="'http://localhost:5000' + mat.content" download
+               class="text-blue-600 hover:underline text-xs">Download PDF</a> -->
+            
+  <button *ngSwitchCase="'pdf'" (click)="downloadMaterial(mat._id, mat.title + '.pdf')"
+        class="text-blue-600 hover:underline text-xs">
+  Download PDF
+</button>
 
-          <a *ngIf="mat.type === 'pdf' || mat.type === 'file'"
-             [href]="'http://localhost:5000/api/materials/' + mat._id + '/download'"
-             download class="text-blue-600 hover:underline text-xs">Download</a>
+
+            <a *ngSwitchCase="'file'" [href]="'http://localhost:5000' + mat.content" download
+               class="text-blue-600 hover:underline text-xs">Download File</a>
+          </ng-container>
         </div>
 
-        <button (click)="deleteMaterial(mat._id)"
-                class="text-red-600 hover:underline text-sm">Delete</button>
+        <div class="flex gap-2">
+          <button class="text-yellow-600 hover:underline text-xs" (click)="editMaterial(mat)">Edit</button>
+          <button class="text-red-600 hover:underline text-xs" (click)="deleteMaterial(mat._id)">Delete</button>
+        </div>
       </li>
     </ul>
   </div>

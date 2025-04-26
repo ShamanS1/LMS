@@ -26,7 +26,16 @@ exports.register = async (req, res) => {
     });
 
     //const token = generateToken(user);
-    res.status(201).json({ user, token });
+    res.status(201).json({
+      token: generateToken(user),
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role
+      }
+    });
+    
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err.message });
   }
@@ -45,8 +54,41 @@ exports.login = async (req, res) => {
       return res.status(400).json({ message: 'Invalid credentials' });
 
     const token = generateToken(user);
-    res.status(200).json({ user, token });
+
+    // Send only needed fields
+    res.status(200).json({
+      token,
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role
+      }
+    });
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 };
+
+
+  // Update Profile
+  exports.updateProfile = async (req, res) => {
+    const { name, password } = req.body;
+    const userId = req.user.id;
+  
+    try {
+      const user = await User.findById(userId);
+      if (!user) return res.status(404).json({ message: 'User not found' });
+  
+      if (name) user.name = name;
+      if (password) {
+        const hashedPassword = await bcrypt.hash(password, 10);
+        user.password = hashedPassword;
+      }
+  
+      await user.save();
+      res.status(200).json({ message: 'Profile updated', user });
+    } catch (err) {
+      res.status(500).json({ message: 'Failed to update profile', error: err.message });
+    }
+  };

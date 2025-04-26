@@ -1,0 +1,79 @@
+<app-tutor-nav></app-tutor-nav>
+<div class="max-w-4xl mx-auto p-4">
+  <h2 class="text-2xl font-bold mb-4">📊 Student Progress</h2>
+
+  <!-- Course Selector -->
+  <div class="mb-6">
+    <label for="course" class="block text-sm font-medium text-gray-700 mb-1">Select Course</label>
+    <select id="course" [(ngModel)]="selectedCourseId" (change)="onCourseSelect()" class="w-full border rounded px-3 py-2">
+      <option value="">-- Select a Course --</option>
+      <option *ngFor="let course of courses" [value]="course._id">{{ course.title }}</option>
+    </select>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="text-gray-600 mb-4">Loading progress data...</div>
+
+  <!-- Progress Summary -->
+  <div *ngIf="summary" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 text-sm">
+    <div class="bg-blue-100 p-4 rounded shadow text-center">
+      <p class="font-medium text-gray-800">Total Enrolled</p>
+      <p class="text-xl font-bold">{{ summary.enrolled }}</p>
+    </div>
+    <div class="bg-green-100 p-4 rounded shadow text-center">
+      <p class="font-medium text-gray-800">Completed</p>
+      <p class="text-xl font-bold text-green-700">{{ summary.completed }}</p>
+    </div>
+    <div class="bg-red-100 p-4 rounded shadow text-center">
+      <p class="font-medium text-gray-800">Not Completed</p>
+      <p class="text-xl font-bold text-red-600">{{ summary.notCompleted }}</p>
+    </div>
+  </div>
+
+  <!-- Progress Table -->
+  <div *ngIf="!loading && students.length > 0">
+    <h3 class="text-lg font-semibold mb-2">Detailed Student Progress</h3>
+    <table class="w-full border-collapse border text-sm">
+      <thead class="bg-gray-100">
+        <tr>
+          <th class="border px-4 py-2 text-left">Name</th>
+          <th class="border px-4 py-2 text-left">Email</th>
+          <th class="border px-4 py-2 text-left">Progress</th>
+          <th class="border px-4 py-2 text-left">View Details</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let student of students">
+          <td class="border px-4 py-2">{{ student.student.name }}</td>
+  <td class="border px-4 py-2">{{ student.student.email }}</td>
+  <td class="border px-4 py-2">{{ student.percentage }}%</td>
+<td class="border px-4 py-2">
+  {{ student.progress }}
+  <button (click)="viewStudentProgress(student)"
+        class="text-blue-600 text-xs underline hover:text-blue-800">View Details</button>
+
+</td>
+
+        </tr>
+      </tbody>
+    </table>
+    <!-- Individual Student Detail -->
+<div *ngIf="studentDetails" class="mt-6 border rounded p-4 bg-gray-50">
+  <h4 class="text-lg font-semibold mb-2">Progress of {{ selectedStudent.name }}</h4>
+
+  <p class="mb-2">Completed {{ studentDetails.completedMaterials.length }} of {{ studentDetails.totalMaterials }} materials ({{ studentDetails.percent }}%)</p>
+
+  <ul class="list-disc pl-6 text-sm text-gray-700">
+    <li *ngFor="let mat of studentDetails.completedMaterials">
+      {{ mat.title }} ({{ mat.type }})
+    </li>
+  </ul>
+</div>
+
+  </div>
+
+  <!-- No students -->
+  <div *ngIf="!loading && students.length === 0 && selectedCourseId" class="text-gray-600 mt-4">
+    No students enrolled in this course yet.
+  </div>
+</div>

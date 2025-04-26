@@ -1,5 +1,7 @@
 const Progress = require('../models/progress.model');
 const Material = require('../models/material.model');
+const Course = require('../models/course.model');
+const User = require('../models/user.model');
 
 // Helper: compute percent
 const calcPercent = (done, total) =>
@@ -126,5 +128,122 @@ exports.getAllProgress = async (req, res) => {
     res.json({ totalMaterials: total, progress: data });
   } catch (err) {
     res.status(500).json({ message: 'Fetch failed', error: err.message });
+  }
+};
+
+
+// Get progress of all students in a course
+exports.getCourseProgress = async (req, res) => {
+  try {
+    const courseId = req.params.courseId;
+
+    const course = await Course.findById(courseId).populate('enrolledStudents', 'name email');
+    if (!course) return res.status(404).json({ message: 'Course not found' });
+
+    if (course.tutor.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Unauthorized' });
+    }
+
+    const materials = await Material.find({ course: courseId });
+    const totalMaterials = materials.length;
+
+    const progressData = await Promise.all(
+      course.enrolledStudents.map(async (student) => {
+        const progress = await Progress.findOne({ student: student._id, course: courseId });
+        const completedCount = progress?.completedMaterials.length || 0;
+        const percentage = totalMaterials === 0 ? 0 : Math.round((completedCount / totalMaterials) * 100);
+
+        return {
+          student: {
+            id: student._id,
+            name: student.name,
+            email: student.email
+          },
+          completed: completedCount,
+          total: totalMaterials,
+          percentage
+        };
+      })
+    );
+
+    res.status(200).json(progressData);
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to fetch course progress', error: err.message });
+  }
+};
+
+
+// GET /api/courses/:id/students-progress
+// exports.getStudentProgress = async (req, res) => {
+//   try {
+//     const courseId = req.params.id;
+
+//     const course = await Course.findById(courseId).populate('enrolledStudents', 'name email');
+//     if (!course) return res.status(404).json({ message: 'Course not found' });
+
+//     if (
+//       course.tutor.toString() !== req.user._id.toString() &&
+//       req.user.role !== 'admin'
+//     ) return res.status(403).json({ message: 'Unauthorized' });
+
+//     const materials = await Material.find({ course: courseId });
+//     const total = materials.length;
+
+//     const progressList = await Promise.all(
+//       course.enrolledStudents.map(async (student) => {
+//         const progress = await Progress.findOne({ course: courseId, student: student._id });
+//         const completed = progress?.completedMaterials?.length || 0;
+//         const percent = total === 0 ? 0 : Math.round((completed / total) * 100);
+//         return {
+//           studentId: student._id,
+//           name: student.name,
+//           email: student.email,
+//           progress: percent
+//         };
+//       })
+//     );
+
+//     res.json({ totalMaterials: total, students: progressList });
+//   } catch (err) {
+//     res.status(500).json({ message: 'Failed to fetch student progress', error: err.message });
+//   }
+// };
+
+
+
+// GET /api/courses/:id/progress-summary
+exports.getCourseProgressSummary = async (req, res) => {
+  try {
+    const courseId = req.params.id;
+
+    const course = await Course.findById(courseId);
+    if (!course) return res.status(404).json({ message: 'Course not found' });
+
+    if (
+      course.tutor.toString() !== req.user._id.toString() &&
+      req.user.role !== 'admin'
+    ) return res.status(403).json({ message: 'Unauthorized' });
+
+    const totalMaterials = await Material.countDocuments({ course: courseId });
+    const enrolled = course.enrolledStudents.length;
+
+    let completedCount = 0;
+
+    for (const studentId of course.enrolledStudents) {
+      const progress = await Progress.findOne({ course: courseId, student: studentId });
+      if (progress && progress.completedMaterials.length === totalMaterials) {
+        completedCount++;
+      }
+    }
+
+    const incompleteCount = enrolled - completedCount;
+
+    res.json({
+      enrolled,
+      completed: completedCount,
+      notCompleted: incompleteCount
+    });
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to fetch course progress summary', error: err.message });
   }
 };

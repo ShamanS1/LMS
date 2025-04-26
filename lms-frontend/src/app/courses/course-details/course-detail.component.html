@@ -1,3 +1,5 @@
+<app-student-nav></app-student-nav>
+
 <div class="max-w-4xl mx-auto py-6 px-4">
     <h1 class="text-3xl font-bold mb-4">{{ course?.title }}</h1>
     <p class="text-gray-600 mb-2">Tutor: {{ course?.tutor?.name }}</p>
@@ -18,33 +20,57 @@
     <!-- Progress Section -->
 <div *ngIf="enrolled" class="mt-4">
     <h2 class="text-lg font-semibold">Your Progress</h2>
-    <app-progress-bar [courseId]="courseId"></app-progress-bar>
+    <app-progress-bar [courseId]="courseId" [percent]="courseProgress"></app-progress-bar>
+
   </div>
   
   
     <div *ngIf="loading" class="text-gray-400">Loading structure...</div>
+
   
     <div *ngIf="structure.length > 0">
       <h2 class="text-xl font-semibold mb-2">Course Structure</h2>
-      <div *ngFor="let sec of structure" class="mb-4">
-        <h3 class="text-md font-medium text-blue-600">{{ sec.title }}</h3>
+      <div *ngFor="let sec of structure" class="mb-6">
+        <h3 class="text-md font-bold text-blue-600 mb-1">
+          {{ sec.title }}
+          <span *ngIf="enrolled && sec.isCompleted" class="ml-2 text-green-600 text-xs font-semibold bg-green-100 px-2 py-1 rounded">
+            ✅ Completed
+          </span>
+        </h3>
+    
         <ul class="text-sm text-gray-700 ml-4 list-disc">
-            <li class="flex justify-between items-center py-1">
-                <div class="flex flex-col">
-                  <span>{{ mat.title }} ({{ mat.type }})</span>
-                  <a *ngIf="mat.type === 'file'" 
-                     [href]="'http://localhost:5000/api/materials/' + mat._id + '/download'"
-                     class="text-blue-600 hover:underline text-sm"
-                     download>
-                    Download
-                  </a>
-                </div>
-                <app-progress-toggle [courseId]="courseId" [materialId]="mat._id"></app-progress-toggle>
-              </li>
-              
-              
+          <li *ngFor="let mat of sec.materials" class="flex justify-between items-center py-1">
+            <div>
+              <b>{{ mat.title }} ({{ mat.type }})</b><br>
+              <button *ngIf="enrolled && mat.type === 'pdf'" (click)="downloadMaterial(mat._id, mat.title + '.pdf')"
+              class="text-blue-600 hover:underline text-xs" download >
+  Download
+</button>
+              <div *ngIf="enrolled && mat.type === 'youtube'" class="text-blue-600 text-xs">
+                <a [href]="mat.content" target="_blank">Watch Video</a>
+              </div>
+            </div>
+    
+            <!-- Progress Toggle only for enrolled -->
+            <app-progress-toggle
+  [courseId]="courseId"
+  [materialId]="mat._id"
+  (progressUpdated)="courseProgress = $event">
+</app-progress-toggle>
+
+
+<!-- And below it, pass courseId to trigger progress bar update -->
+<!-- <app-progress-bar [courseId]="courseId"></app-progress-bar> -->
+
+          </li>
         </ul>
       </div>
     </div>
+     <!-- Certificate Section -->
+     <button (click)="downloadCertificate()"
+     class="inline-block bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600">
+🎓 Download Certificate
+</button>
+
   </div>
   

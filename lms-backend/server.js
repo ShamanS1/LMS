@@ -47,6 +47,8 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/api/progress', progressRoutes);
 app.use('/api/sections', sectionRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/certificates', require('./routes/certificate.routes'));
+
 
 
 

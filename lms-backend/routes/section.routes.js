@@ -5,7 +5,8 @@ const {
   createSection,
   getSectionsByCourse,
   updateSection,
-  deleteSection
+  deleteSection,
+  getCourseStructure
 } = require('../controllers/section.controller');
 
 const router = express.Router();
@@ -14,6 +15,7 @@ const router = express.Router();
 router.post('/', protect, permit('tutor','admin'), createSection);
 router.put('/:id', protect, permit('tutor','admin'), updateSection);
 router.delete('/:id', protect, permit('tutor','admin'), deleteSection);
+router.get('/course/:id', protect, getCourseStructure);
 
 // Anyone logged in can list
 router.get('/course/:courseId', protect, getSectionsByCourse);

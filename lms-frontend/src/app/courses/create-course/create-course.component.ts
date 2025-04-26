@@ -39,4 +39,8 @@ export class CreateCourseComponent {
       error: err => alert(err.error.message || 'Failed to create course')
     });
   }
+
+  goBackToManage() {
+    this.router.navigate([`/tutor-dashboard`]);
+  }
 }

@@ -39,9 +39,7 @@ router.post(
 );
 
 router.get('/', getPublishedCourses); // Public
-router.get('/:id', getCourseById);
-router.put('/:id', protect, permit('tutor', 'admin'), updateCourse);
-router.delete('/:id', protect, permit('tutor', 'admin'), deleteCourse);
+
 
 router.get('/:id/structure', protect, getCourseStructure);
 
@@ -50,7 +48,9 @@ router.get('/my-courses', protect, permit('student'), getMyCourses);
 router.get('/:courseId/students', protect, permit('tutor', 'admin'), getEnrolledStudents);
 router.delete('/:courseId/unenroll', protect, permit('student'), unenrollFromCourse);
 router.patch('/:id/toggle-publish', protect, permit('tutor', 'admin'), togglePublishStatus);
-router.get('/my-created', protect, permit('tutor', 'admin'), getMyCreatedCourses);
-
+router.get('/mine', protect, permit('tutor', 'admin'), getMyCreatedCourses);
+router.get('/:id', getCourseById);
+router.put('/:id', protect, permit('tutor', 'admin'), updateCourse);
+router.delete('/:id', protect, permit('tutor', 'admin'), deleteCourse);
 
 module.exports = router;

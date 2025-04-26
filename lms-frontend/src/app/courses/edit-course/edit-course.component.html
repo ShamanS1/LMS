@@ -1,0 +1,29 @@
+<app-tutor-nav></app-tutor-nav>
+
+<div class="max-w-xl mx-auto mt-8 p-6 bg-white rounded shadow">
+  <h2 class="text-xl font-bold mb-4">Edit Course</h2>
+  <button type="button" (click)="goBackToManage()"
+  class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">
+← Back to Manage Course
+</button>
+  <form [formGroup]="courseForm" (ngSubmit)="onSubmit()">
+    <label class="block mb-2">Title</label>
+    <input formControlName="title" class="border px-3 py-2 w-full rounded mb-4" />
+  
+    <label class="block mb-2">Description</label>
+    <textarea formControlName="description" class="border px-3 py-2 w-full rounded mb-4"></textarea>
+  
+    <label class="block mb-2">Category</label>
+    <input formControlName="category" class="border px-3 py-2 w-full rounded mb-4" />
+  
+    <label class="inline-flex items-center mb-4">
+      <input type="checkbox" formControlName="isPublished" class="mr-2" />
+      Publish this course
+    </label>
+  
+    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+      Update
+    </button>
+  </form>
+  
+</div>

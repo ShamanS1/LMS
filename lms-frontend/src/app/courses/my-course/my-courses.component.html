@@ -1,3 +1,5 @@
+<app-student-nav></app-student-nav>
+
 <div class="max-w-7xl mx-auto py-6 px-4">
     <h1 class="text-2xl font-bold mb-6">My Courses</h1>
   
@@ -11,7 +13,11 @@
         <p class="text-sm text-gray-500">Category: {{ course.category }}</p>
   
         <!-- Add Progress Bar -->
-        <app-progress-bar [courseId]="course._id"></app-progress-bar>
+<app-progress-bar
+[courseId]="course._id"
+[percent]="courseProgress[course._id] || 0">
+</app-progress-bar>
+
   
         <!-- Start Learning Button -->
         <a [routerLink]="['/courses', course._id]"

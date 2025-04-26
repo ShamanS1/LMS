@@ -61,24 +61,33 @@ logout(message = 'You have been logged out.') {
   }
   
 
-  
-
-  getUser() {
-    return this.user;
-  }
-
   login(data: { email: string; password: string }): Observable<any> {
     return this.http.post(`${this.baseUrl}/login`, data).pipe(
       tap((res: any) => {
         localStorage.setItem('token', res.token);
-        this.user = { _id: res.user._id, role: res.user.role };
+        // Store the entire user object, not just the name
+        localStorage.setItem('user', JSON.stringify(res.user)); // Save the entire user
+        this.user = { _id: res.user._id, name: res.user.name, role: res.user.role }; // Include name
         this.startSessionWatcher();
         
-        // 🧠 Role-based redirect
+        // Role-based redirect
         const redirect = this.user.role === 'tutor' ? '/tutor-dashboard' : '/courses';
         this.router.navigate([redirect]);
       })
     );
+  }
+  
+  getUser() {
+    const user = localStorage.getItem('user');
+    return user ? JSON.parse(user) : null;
+  }
+  
+  getUserName(): string {
+    return this.getUser()?.name || ''; // Access the name from the full user object
+  }
+  
+  getUserRole(): string {
+    return this.getUser()?.role || ''; // Access role from the full user object
   }
   
 
@@ -106,4 +115,5 @@ logout(message = 'You have been logged out.') {
   isAuthenticated(): boolean {
     return !!localStorage.getItem('token');
   }
+
 }

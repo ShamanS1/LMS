@@ -3,11 +3,12 @@ import { ActivatedRoute, Router, RouterLink, RouterModule } from '@angular/route
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TutorNavComponent } from '../../shared/tutor-nav/tutor-nav.component';
 
 @Component({
   selector: 'app-manage-course',
   standalone: true,
-  imports: [CommonModule, FormsModule,RouterLink,RouterModule],
+  imports: [CommonModule, FormsModule,RouterModule,TutorNavComponent],
   templateUrl: './manage-course.component.html',
   styleUrls: ['./manage-course.component.css']
 })
@@ -148,6 +149,26 @@ export class ManageCourseComponent implements OnInit {
       });
     }
   }
+
+  downloadMaterial(matId: string, filename: string) {
+    const token = localStorage.getItem('token');
+    this.http.get(`http://localhost:5000/api/materials/${matId}/download`, {
+      responseType: 'blob',
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    }).subscribe(blob => {
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      a.click();
+      window.URL.revokeObjectURL(url);
+    }, error => {
+      console.error('Download failed', error);
+    });
+  }
+  
 
   // Optional: route to edit course
   editCourse() {

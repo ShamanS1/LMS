@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 
@@ -9,13 +9,19 @@ import { HttpClient } from '@angular/common/http';
   templateUrl: './progress-bar.component.html',
   styleUrls: ['./progress-bar.component.css']
 })
-export class ProgressBarComponent implements OnInit {
+export class ProgressBarComponent implements OnChanges {
   @Input() courseId = '';
-  percent: number = 0;
+  @Input() percent: number | null = null; // <-- support dynamic updates
 
   constructor(private http: HttpClient) {}
 
-  ngOnInit(): void {
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['courseId'] && this.courseId && this.percent === null) {
+      this.loadProgress(); // only load if not dynamically passed
+    }
+  }
+
+  loadProgress() {
     this.http.get<any>(`http://localhost:5000/api/progress/${this.courseId}`).subscribe({
       next: res => {
         this.percent = res.percent || 0;

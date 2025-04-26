@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 
@@ -12,6 +12,7 @@ import { HttpClient } from '@angular/common/http';
 export class ProgressToggleComponent implements OnInit {
   @Input() courseId = '';
   @Input() materialId = '';
+  @Output() progressUpdated = new EventEmitter<number>();
   isCompleted = false;
   loading = false;
 
@@ -22,12 +23,11 @@ export class ProgressToggleComponent implements OnInit {
   }
 
   getProgress() {
-    this.http.get<any>(`http://localhost:5000/api/progress/${this.courseId}`)
-      .subscribe({
-        next: res => {
-          this.isCompleted = res.completedMaterials.some((m: any) => m._id === this.materialId);
-        }
-      });
+    this.http.get<any>(`http://localhost:5000/api/progress/${this.courseId}`).subscribe({
+      next: res => {
+        this.isCompleted = res.completedMaterials.some((m: any) => m._id === this.materialId);
+      }
+    });
   }
 
   toggleProgress() {
@@ -35,10 +35,18 @@ export class ProgressToggleComponent implements OnInit {
     this.http.post(`http://localhost:5000/api/progress/${this.courseId}/materials/${this.materialId}/toggle`, {})
       .subscribe({
         next: (res: any) => {
-          this.isCompleted = res.completedMaterials.some((m: any) => m._id === this.materialId);
+          const wasCompleted = this.isCompleted;
+          const nowCompleted = res.completedMaterials.some((m: any) => m._id === this.materialId);
+  
+          // Force toggle if the server says it's the same (just in case)
+          this.isCompleted = nowCompleted !== wasCompleted ? nowCompleted : !wasCompleted;
+  
           this.loading = false;
+          this.progressUpdated.emit(res.percent);
         },
         error: () => this.loading = false
       });
   }
-}
+  
+  }
+

@@ -2,11 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { RouterModule, Router } from '@angular/router';
+import { TutorNavComponent } from '../../shared/tutor-nav/tutor-nav.component';
 
 @Component({
   selector: 'app-tutor-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule,TutorNavComponent],
   templateUrl: './tutor-dashboard.component.html',
   styleUrls: ['./tutor-dashboard.component.css']
 })

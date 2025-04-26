@@ -18,8 +18,7 @@ const {
 
 // Add material
 // Update to accept multipart form data
-router.post('/', protect, permit('tutor', 'admin'), upload.single('file'), addMaterial,
-upload.single('file'));
+router.post('/', protect, permit('tutor', 'admin'), upload.single('file'), addMaterial);
 
 
 // Get materials for a course

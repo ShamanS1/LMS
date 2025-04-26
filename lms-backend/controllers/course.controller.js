@@ -16,24 +16,38 @@ exports.getMyCreatedCourses = async (req, res) => {
 exports.getCourseStructure = async (req, res) => {
   try {
     const courseId = req.params.id;
+    const course = await Course.findById(courseId);
 
-    // Fetch sections of the course
+    if (!course) return res.status(404).json({ message: 'Course not found' });
+
+    const isEnrolled = course.enrolledStudents.includes(req.user._id);
+
     const sections = await Section.find({ course: courseId }).sort('order').lean();
 
-    // Fetch all materials for the course
-    const materials = await Material.find({ course: courseId }).lean();
+    let grouped;
 
-    // Group materials into their respective sections
-    const grouped = sections.map(sec => ({
-      ...sec,
-      materials: materials.filter(m => m.section.toString() === sec._id.toString())
-    }));
+    if (isEnrolled) {
+      // ✅ Enrolled students → Show all materials
+      const materials = await Material.find({ course: courseId }).lean();
+
+      grouped = sections.map(sec => ({
+        ...sec,
+        materials: materials.filter(m => m.section.toString() === sec._id.toString())
+      }));
+    } else {
+      // ❌ Not enrolled → Only show section titles, no materials
+      grouped = sections.map(sec => ({
+        ...sec,
+        materials: [] // Hide materials
+      }));
+    }
 
     res.json(grouped);
   } catch (err) {
     res.status(500).json({ message: 'Failed to load course structure', error: err.message });
   }
 };
+
 
 // Create course
 exports.createCourse = async (req, res) => {
@@ -85,6 +99,7 @@ exports.getCourseById = async (req, res) => {
     res.status(500).json({ message: 'Error fetching course', error: err.message });
   }
 };
+
 
 // Update course (only by creator)
 exports.updateCourse = async (req, res) => {
@@ -181,6 +196,16 @@ exports.getMyCourses = async (req, res) => {
   }
 };
 
+exports.getMyCreatedCourses = async (req, res) => {
+  try {
+    // Ensure that req.user._id is valid before querying the courses
+    const courses = await Course.find({ tutor: req.user._id });
+    res.status(200).json(courses);
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to load tutor courses' });
+  }
+};
+
 // Tutor views enrolled students
 exports.getEnrolledStudents = async (req, res) => {
   try {
@@ -200,6 +225,9 @@ exports.getEnrolledStudents = async (req, res) => {
     res.status(500).json({ message: 'Failed to fetch students', error: err.message });
   }
 };
+
+
+
 
 // Unenroll from a course
 exports.unenrollFromCourse = async (req, res) => {
