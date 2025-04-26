@@ -20,6 +20,9 @@ exports.checkCertificateEligibility = async (req, res) => {
   }
 };
 
+const puppeteer = require('puppeteer');
+const Course = require('../models/course.model');
+
 exports.downloadCertificate = async (req, res) => {
   try {
     const student = req.user;
@@ -30,21 +33,39 @@ exports.downloadCertificate = async (req, res) => {
 
     const html = `
       <html>
-        <head><title>Certificate</title></head>
-        <body style="text-align: center; font-family: sans-serif;">
-          <h1>🎓 Certificate of Completion</h1>
-          <p>This certifies that <strong>${student.name}</strong></p>
-          <p>has successfully completed the course</p>
-          <h2>${course.title}</h2>
-          <p><em>Instructor: ${course.tutor.name}</em></p>
-          <p style="margin-top: 50px;">Date: ${new Date().toLocaleDateString()}</p>
+        <head>
+          <style>
+            body { text-align: center; font-family: sans-serif; padding: 40px; }
+            h1 { color: #2c3e50; }
+            .cert-box { border: 2px solid #2c3e50; padding: 30px; border-radius: 10px; }
+          </style>
+        </head>
+        <body>
+          <div class="cert-box">
+            <h1>🎓 Certificate of Completion</h1>
+            <p>This certifies that <strong>${student.name}</strong></p>
+            <p>has successfully completed the course</p>
+            <h2>${course.title}</h2>
+            <p><em>Instructor: ${course.tutor.name}</em></p>
+            <p style="margin-top: 50px;">Date: ${new Date().toLocaleDateString()}</p>
+          </div>
         </body>
       </html>
     `;
 
-    res.set('Content-Type', 'text/html');
-    res.send(html);
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+    await page.setContent(html);
+    const pdfBuffer = await page.pdf({ format: 'A4' });
+    await browser.close();
+
+    res.set({
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': `attachment; filename="${course.title}_certificate.pdf"`,
+    });
+    res.send(pdfBuffer);
   } catch (err) {
     res.status(500).json({ message: 'Failed to generate certificate', error: err.message });
   }
 };
+
