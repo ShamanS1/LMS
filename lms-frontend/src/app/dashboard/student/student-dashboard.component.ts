@@ -7,7 +7,7 @@ import { StudentNavComponent } from './student-nav/student-nav.component';
 @Component({
   selector: 'app-student-dashboard',
   standalone: true,
-  imports: [CommonModule,RouterModule,StudentNavComponent],
+  imports: [CommonModule,RouterModule],
   templateUrl: './student-dashboard.component.html',
   styleUrls: ['./student-dashboard.component.css']
 })
