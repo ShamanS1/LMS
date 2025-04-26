@@ -1,20 +1,25 @@
 <app-student-nav></app-student-nav>
-<div class="max-w-7xl mx-auto py-6 px-4">
-    <h1 class="text-2xl font-bold mb-6">All Published Courses</h1>
+<div class="max-w-7xl mx-auto py-8 px-6 bg-gray-50">
+    <h1 class="text-3xl font-bold mb-8 text-gray-800 border-b pb-4">All Published Courses</h1>
   
-    <div *ngIf="loading" class="text-gray-500">Loading...</div>
-    <div *ngIf="!loading && courses.length === 0" class="text-gray-500">No courses found.</div>
+    <div *ngIf="loading" class="flex justify-center py-12">
+        <div class="text-gray-500 font-medium">Loading courses...</div>
+    </div>
+    <div *ngIf="!loading && courses.length === 0" class="flex justify-center py-12">
+        <div class="text-gray-500 font-medium">No courses found.</div>
+    </div>
   
-    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <div *ngFor="let course of courses" class="bg-white p-4 shadow rounded">
-        <img [src]="course.thumbnail" alt="Course image" class="h-40 w-full object-cover rounded mb-4">
-        <h2 class="text-lg font-semibold">{{ course.title }}</h2>
-        <p class="text-sm text-gray-500 mb-2">Category: {{ course.category }}</p>
-        <p class="text-sm text-gray-500 mb-4">Tutor: {{ course.tutor.name }}</p>
-        <a [routerLink]="['/courses', course._id]" class="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div *ngFor="let course of courses" class="bg-white p-6 shadow-md rounded-lg hover:shadow-lg transition-shadow duration-300">
+        <img [src]="course.thumbnail" alt="Course image" class="h-48 w-full object-cover rounded-md mb-5">
+        <h2 class="text-xl font-semibold text-gray-800 mb-3">{{ course.title }}</h2>
+        <div class="space-y-2 mb-6">
+            <p class="text-sm text-gray-600">Category: <span class="font-medium text-gray-700">{{ course.category }}</span></p>
+            <p class="text-sm text-gray-600">Tutor: <span class="font-medium text-gray-700">{{ course.tutor.name }}</span></p>
+        </div>
+        <a [routerLink]="['/courses', course._id]" class="inline-block bg-indigo-600 text-white px-5 py-2 rounded-md hover:bg-indigo-700 transition duration-300 font-medium">
           View Details
         </a>
       </div>
     </div>
-  </div>
-  
+</div>
