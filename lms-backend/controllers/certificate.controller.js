@@ -1,6 +1,7 @@
 const Course = require('../models/course.model');
 const Material = require('../models/material.model');
 const Progress = require('../models/progress.model');
+const puppeteer = require('puppeteer');
 
 exports.checkCertificateEligibility = async (req, res) => {
   try {
@@ -20,8 +21,7 @@ exports.checkCertificateEligibility = async (req, res) => {
   }
 };
 
-const puppeteer = require('puppeteer');
-const Course = require('../models/course.model');
+
 
 exports.downloadCertificate = async (req, res) => {
   try {
