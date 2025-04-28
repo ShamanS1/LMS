@@ -30,11 +30,11 @@
   </div>
 
   <!-- Course Cards -->
-  <div class="grid md:grid-cols-2 gap-8">
+  <div  class="grid md:grid-cols-2 gap-8">
     <div *ngFor="let course of dashboard" class="bg-white rounded-xl shadow-lg overflow-hidden transform transition duration-300 hover:shadow-xl hover:-translate-y-1">
       <!-- Course Header -->
       <div class="relative">
-        <img [src]="course.thumbnail" class="w-full h-48 object-cover" alt="Course Thumbnail" />
+        <img [src]="'http://localhost:5000' + course.thumbnail" class="w-full h-48 object-cover" alt="Course Thumbnail" />
         <div class="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-60"></div>
         <div class="absolute bottom-0 left-0 p-4 text-white">
           <h2 class="text-xl font-bold text-shadow">{{ course.title }}</h2>
@@ -115,7 +115,7 @@
         
         <!-- Continue Button -->
         <div class="mt-6">
-          <button class="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition duration-200 flex items-center justify-center">
+          <button  (click)="goBackToManage()" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition duration-200 flex items-center justify-center">
             <span>Continue Learning</span>
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />

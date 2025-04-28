@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { RouterLink, RouterModule } from '@angular/router';
+import { Router, RouterLink, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-student-dashboard',
@@ -11,10 +11,12 @@ import { RouterLink, RouterModule } from '@angular/router';
   styleUrls: ['./student-dashboard.component.css']
 })
 export class StudentDashboardComponent implements OnInit {
+  courses: any[] = [];
   dashboard: any[] = [];
   loading = true;
 
-  constructor(private http: HttpClient) {}
+
+  constructor(private http: HttpClient,private router: Router) {}
 
   ngOnInit(): void {
     this.http.get<{ dashboard: any[] }>('http://localhost:5000/api/dashboard/student')
@@ -28,5 +30,9 @@ export class StudentDashboardComponent implements OnInit {
           this.loading = false;
         }
       });
+  }
+
+  goBackToManage() {
+    this.router.navigate([`/my-courses`]);
   }
 }
